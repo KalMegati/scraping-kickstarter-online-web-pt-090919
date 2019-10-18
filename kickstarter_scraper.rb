@@ -1,6 +1,8 @@
 require "nokogiri"
 require "pry"
 
+### IMAGES CAN USE AN EACH LOOP
+
 # require libraries/modules here
 
 def create_project_hash
@@ -14,6 +16,8 @@ def create_project_hash
   description = kickstarter.css("p.bbcard_blurb")
   location = kickstarter.css("ul.project-meta li a")
   funding = kickstarter.css("ul.project-stats li.first.funded strong")
+  
+  binding.pry
 
   kickstarter.css("h2.bbcard_name strong a").each { |title|
     projects[title.text] = {
@@ -25,8 +29,20 @@ def create_project_hash
   }
   
   projects.each_with_index { |(proj, info), i|
+    info[:image_link] = image }   
+  
+  projects.each_with_index { |(proj, info), i|
+    info[:description] = description.map{|desc|desc.text.chop}[i]
+  }  
+  
+  projects.each_with_index { |(proj, info), i|
+    info[:location] = location.map{|loca|loca.text.chop}[i]
+  }  
+  
+  projects.each_with_index { |(proj, info), i|
     info[:percent_funded] = funding.map{|funds|funds.text.chop.to_i}[i]
   }
+  
   binding.pry
   projects
 end
